@@ -1,0 +1,26 @@
+# Binary
+depx
+depx.exe
+
+# Go
+*.o
+*.so
+*.dll
+*.exe
+*.test
+*.out
+go.work
+
+# Dependency directories
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
