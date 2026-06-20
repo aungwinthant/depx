@@ -34,12 +34,55 @@ depx [command] [flags]
 
 | Command  | Description                          |
 |----------|--------------------------------------|
-| init     | Initialize depx configuration        |
+| init     | Create a depx.yaml configuration file|
 | build    | Build Docker image for deployment    |
 | push     | Push Docker image to registry        |
 | release  | Deploy image to remote server via SSH|
 
-Run `depx [command] --help` for more details on each command.
+### Workflow
+
+```bash
+# 1. Initialize configuration
+depx init
+
+# 2. Build the Docker image
+depx build
+
+# 3. Push to registry
+depx push
+
+# 4. Deploy to remote server
+depx release
+```
+
+### Configuration
+
+depx reads a `depx.yaml` file in the current directory:
+
+```yaml
+app:
+  name: my-app          # application name
+  dockerfile: Dockerfile
+  context: .
+
+image:
+  name: my-app          # image repository name
+  tag: latest
+  registry: docker.io   # registry host
+
+deploy:
+  host: your-server.com
+  port: 22
+  user: deploy
+  key: ~/.ssh/id_rsa
+  container:
+    name: my-app        # container name on remote
+    port: "3000:3000"   # host:container port mapping
+    env_file: .env
+```
+
+Values support `${VAR}` syntax for environment variable substitution
+(e.g. `registry: ${DOCKER_REGISTRY}`).
 
 ## Project Structure
 
@@ -48,6 +91,7 @@ Run `depx [command] --help` for more details on each command.
 ├── main.go          # Entry point
 ├── cmd/
 │   ├── root.go      # Root Cobra command
+│   ├── config.go    # Shared config struct and helpers
 │   ├── init.go      # init command
 │   ├── build.go     # build command
 │   ├── push.go      # push command
@@ -68,5 +112,3 @@ go build -o depx .
 # Run
 ./depx --help
 ```
-
-> Note: Business logic for commands is not yet implemented. This is the initial CLI scaffold.
