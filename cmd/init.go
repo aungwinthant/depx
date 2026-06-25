@@ -22,26 +22,32 @@ deploy:
   port: 22
   user: deploy
   key: ~/.ssh/id_rsa
+  insecure_skip_host_key: false   # set true only to opt out of known_hosts verification
   container:
     name: my-app
-    port: "3000:3000"
-    env_file: .env
+    port: "3000:3000"             # host:container port mapping
+    env_file: .env                # passed to docker run as --env-file
+    network: ""                   # join an existing docker network, e.g. myapp_default
+    aliases: []                   # network aliases, e.g. [backend]
 `
 
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize depx configuration",
-	Long:  "Create a depx.yaml configuration file in the current project",
-	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := os.Stat("depx.yaml"); err == nil {
-			fmt.Println("depx.yaml already exists")
-			return
+	Long:  "Create a depx configuration file in the current project",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		configPath, err := cmd.Flags().GetString("config")
+		if err != nil {
+			return fmt.Errorf("reading config flag: %w", err)
 		}
-		if err := os.WriteFile("depx.yaml", []byte(configTemplate), 0644); err != nil {
-			fmt.Fprintln(os.Stderr, "Error creating depx.yaml:", err)
-			return
+		if _, err := os.Stat(configPath); err == nil {
+			return fmt.Errorf("%s already exists", configPath)
 		}
-		fmt.Println("Created depx.yaml")
+		if err := os.WriteFile(configPath, []byte(configTemplate), 0644); err != nil {
+			return fmt.Errorf("creating %s: %w", configPath, err)
+		}
+		fmt.Printf("Created %s\n", configPath)
+		return nil
 	},
 }
 

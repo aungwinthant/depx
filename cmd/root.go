@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -14,8 +13,13 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	rootCmd.SilenceUsage = true
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.PersistentFlags().StringP("config", "c", "depx.yaml", "path to depx config file")
+	rootCmd.PersistentFlags().Bool("insecure-skip-host-key", false, "skip SSH host key verification (insecure)")
 }

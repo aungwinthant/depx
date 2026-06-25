@@ -28,17 +28,20 @@ type ImageConfig struct {
 }
 
 type DeployConfig struct {
-	Host      string          `yaml:"host"`
-	Port      int             `yaml:"port"`
-	User      string          `yaml:"user"`
-	Key       string          `yaml:"key"`
-	Container ContainerConfig `yaml:"container"`
+	Host                string          `yaml:"host"`
+	Port                int             `yaml:"port"`
+	User                string          `yaml:"user"`
+	Key                 string          `yaml:"key"`
+	InsecureSkipHostKey bool            `yaml:"insecure_skip_host_key"`
+	Container           ContainerConfig `yaml:"container"`
 }
 
 type ContainerConfig struct {
-	Name    string `yaml:"name"`
-	Port    string `yaml:"port"`
-	EnvFile string `yaml:"env_file"`
+	Name    string   `yaml:"name"`
+	Port    string   `yaml:"port"`
+	EnvFile string   `yaml:"env_file"`
+	Network string   `yaml:"network"`
+	Aliases []string `yaml:"aliases"`
 }
 
 func loadConfig(path string) (*Config, error) {
